@@ -31,9 +31,13 @@ int main() {
     cin >> fileToBeOpened;
     ifstream myfile; 
     myfile.open(fileToBeOpened);
+    if(!myfile) {
+        cout << "file does not exist";
+    }
     int storyArrSize;
     myfile >> storyArrSize;
-    cout << storyArrSize << endl;
+    string nothing;
+    getline(myfile, nothing);
     Story *storyArr = nullptr;
     storyArr = new Story[storyArrSize];
     // read input data into array
@@ -44,18 +48,12 @@ int main() {
         std::getline(myfile, title);
         std::getline(myfile, url);
         myfile >> score;
-        cout << score << endl;
-        cout << url << endl;
-        cout << title << endl;
+        getline(myfile, nothing);
         Story newStory = {score, title, url};
         *(storyArr + storyNum) = newStory;
     }
-    // test to see if correct values in array(this is only for testing)
-    for(int i = 0; i < storyArrSize; i++) {
-        cout << storyArr[i].score << " " << storyArr[i].title << endl;
-    }
 
-    // find mode, map int to vector of story
+   // find mode, map int to vector of story
     // for each score, have a list of vectors with that score
     unordered_map<int, vector<Story>> map;
     for(int i = 0; i < storyArrSize; i++) {
@@ -63,7 +61,7 @@ int main() {
         if(map.count(story.score) == 0) {
             vector<Story> thisScoreVector;
             thisScoreVector.push_back(story);
-            map[story.score] = thisScoreVector
+            map[story.score] = thisScoreVector;
         } else {
             map[story.score].push_back(story);
         }
@@ -74,17 +72,17 @@ int main() {
     // then iterate through map and find frequency with vector size that is the highest, that will be our mode frequency
     // no mode if all frequencies are the same(return -1)
     // have a vector that points to the current highest frequency's story vector, and return those stats
-    for(int freq : map) {
-        if(currFreq == -1) {
-            currFreq = freq;
-        } else if(currFreq != freq) {
-            foundDiff = true;
-            break;
-        }
-    }
-    if(!foundDiff) {
-        cout << -1;
-    }
+    // for(int freq : map) {
+    //     if(currFreq == -1) {
+    //         currFreq = freq;
+    //     } else if(currFreq != freq) {
+    //         foundDiff = true;
+    //         break;
+    //     }
+    // }
+    // if(!foundDiff) {
+    //     cout << -1;
+    // }
 
     // finally, print out mode, and each story's title and url in the final mode vector
     return 0;
