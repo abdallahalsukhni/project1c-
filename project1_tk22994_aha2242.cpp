@@ -100,8 +100,8 @@ int findMode(const int* STORY_ARR, const int STORY_ARR_SIZE) {
 
 
   // calculate what the mode is
-  for(auto& storyFreq : map) {
-    if(storyFreq.second.size() > mostFreqSoFar) {
+  for (auto& storyFreq : map) {
+    if (storyFreq.second.size() > mostFreqSoFar) {
       mode = storyFreq.first;
       mostFreqSoFar = storyFreq.second.size();
     }
@@ -113,6 +113,7 @@ int findMode(const int* STORY_ARR, const int STORY_ARR_SIZE) {
       modeVector.push_back(storyFreq.first);
     }
   }
+
   int trueMode = -1;
   // find which mode occurs first in input file
   for(int spot = 0; spot < STORY_ARR_SIZE; spot++) {
@@ -126,9 +127,8 @@ int findMode(const int* STORY_ARR, const int STORY_ARR_SIZE) {
         break;
       }
     }
-    if(found) {
+    if (found)
       break;
-    }
   }
 
   return trueMode;
