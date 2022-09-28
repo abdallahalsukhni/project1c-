@@ -23,7 +23,9 @@ struct Story {
   string url;
 };
 
-int findMode(const int* STORY_ARR, const int STORY_ARR_SIZE);
+int findMode(const Story* STORY_ARR, const int STORY_ARR_SIZE);
+
+unordered_map<int, vector<Story> > map;
 
 int main() {
   string fileToBeOpened;
@@ -58,17 +60,15 @@ int main() {
   // finally, print out mode, and each story's title and url in the final mode vector
   cout << "Mode: " << trueMode << "\n\n";
   vector<Story> storiesToBePrinted = map[trueMode];
-  for(auto& thisStory : storiesToBePrinted) {
+  for (auto& thisStory : storiesToBePrinted)
     cout << thisStory.title << "\n" << thisStory.url << "\n\n";
-  }
 
   return 0;
 }
 
-int findMode(const int* STORY_ARR, const int STORY_ARR_SIZE) {
+int findMode(const Story* STORY_ARR, const int STORY_ARR_SIZE) {
   // find mode, map int to vector of story
   // for each score, have a vector of stories with that score
-  unordered_map<int, vector<Story> > map;
   for (int i = 0; i < STORY_ARR_SIZE; i++) {
     Story story = *(STORY_ARR + i);
     if (map.count(story.score) == 0) {
