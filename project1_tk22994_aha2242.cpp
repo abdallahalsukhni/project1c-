@@ -92,12 +92,11 @@ int findMode(const int* STORY_ARR, const int STORY_ARR_SIZE) {
     }
   }
   if (!foundDiff)
-    cout << -1;
+    return -1;
 	
   vector<int> modeVector;
   int mode = 0;
   int mostFreqSoFar = 0;
-
 
   // calculate what the mode is
   for (auto& storyFreq : map) {
@@ -109,14 +108,14 @@ int findMode(const int* STORY_ARR, const int STORY_ARR_SIZE) {
 
   // if there are multiple modes then add each of them to a list, and find which one occurs first in input file
   for (auto& storyFreq : map) {
-    if(storyFreq.second.size() == mostFreqSoFar) {
+    if (storyFreq.second.size() == mostFreqSoFar) {
       modeVector.push_back(storyFreq.first);
     }
   }
 
   int trueMode = -1;
   // find which mode occurs first in input file
-  for(int spot = 0; spot < STORY_ARR_SIZE; spot++) {
+  for (int spot = 0; spot < STORY_ARR_SIZE; spot++) {
     bool found = false;
     Story story = *(STORY_ARR + spot);
     int modeToBeFound = story.score;
