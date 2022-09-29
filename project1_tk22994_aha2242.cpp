@@ -24,10 +24,11 @@ struct Story {
 };
 
 // function prototypes
-void readInputToArray(Story *storyArr, const int STORY_ARR_SIZE, ifstream *storyFile);
+void readInputToArray(Story *storyArr, const int STORY_ARR_SIZE, ifstream &storyFile);
 int findMode(const Story* STORY_ARR, const int STORY_ARR_SIZE, unordered_map<int, vector<Story> > *map);
 
 /*********************************************************** 
+ * log: worked on by tushar and abdallah
 // READINPUTTOARRAY: Reads input Insta story data into dynamic array
 // :param STORYARR: Ptr to array of `Story` structs
 // :param STORYARRSIZE: Size of STORYARR (integer)
@@ -51,6 +52,7 @@ void readInputToArray(Story *storyArr, const int STORY_ARR_SIZE, ifstream& story
 }
 
 /*********************************************************** 
+ *  log: worked on by tushar and abdallah
 // MAIN: base of execution
 // :return: where there was an error (1) in  or no! (0)
 ***********************************************************/
@@ -90,6 +92,7 @@ int main() {
 }
 
 /*********************************************************** 
+  * log: worked on by tushar and abdallah
 // FINDMODE: find mode, map score to vector of story for each score, have a vector of stories with that score
 // :param STORYARR: ptr to array of `Story` structs
 // :param STORYARRSIZE: Integer that indicates number of elems in array
@@ -108,7 +111,7 @@ int findMode(const Story* STORY_ARR, const int STORY_ARR_SIZE, unordered_map<int
     else
       map[story.score].push_back(story);
   }
-
+ unordered_map<int, vector<Story> > map = *mapPtr;
   int currFreq = -1;  // check to see if all modes are the same or not
   bool foundDiff = false; // does the data have a mode?
   for (auto& storyFreq : map) {
