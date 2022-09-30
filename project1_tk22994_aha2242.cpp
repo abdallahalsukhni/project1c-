@@ -1,11 +1,12 @@
 /* 
 // File Name: project1_tk22994_aha2242.cpp
 // Authors: Tushar Kohli, Abdallah Al-Sukhni
-// Date: 25 Sep 2022
+// Date: 30 Sep 2022
 // Assignment Number 1
 // CS 105C Spring 2022
 // Instructor: Dr. Palacios
-*/
+// C++ program that will display a list of the top Internet stories on 
+// Instagram (hereafter, 'Insta') https://www.instagram.com/ */
 
 #include <iostream>
 #include <iomanip>
@@ -15,77 +16,88 @@
 #include <vector>
 using namespace std;
 
-// C++ program that will display a list of the 
-// top Internet stories on Instagram
+// encapsulates popularity SCORE, TITLE and URL of Insta story
 struct Story {
-  int score;
-  string title;
-  string url;
+  int score;    // popularity SCORE of Insta story
+  string title; // TITLE thereof
+  string url;   // URL thereof
 };
 
-int findMode(const Story* STORY_ARR, const int STORY_ARR_SIZE);
-int readInputToArray(Story *storyArr, int *storyArrSizePtr, string fileToBeOpened);
+// function prototypes
+void readInputToArray(Story *storyArr, const int STORY_ARR_SIZE, ifstream *storyFile);
+int findMode(const Story* STORY_ARR, const int STORY_ARR_SIZE, unordered_map<int, vector<Story> > *map);
 
-unordered_map<int, vector<Story> > map;
-
-int readInputToArray(Story *storyArr, int *storyArrSizePtr, string fileToBeOpened) {
-  ifstream myfile;
-  myfile.open(fileToBeOpened);
-  if (!myfile) {
-    cout << "File does not exist\n";
-    return 1;
-  }
-  myfile >> *storyArrSizePtr;
-  string nothing;
-  getline(myfile, nothing);
-  int i = *storyArrSizePtr;
+/*********************************************************** 
+// READINPUTTOARRAY: Reads input Insta story data into dynamic array
+// :param STORYARR: Ptr to array of `Story` structs
+// :param STORYARRSIZE: Size of STORYARR (integer)
+// :param STORYFILE: File stream object of our user's Insta story data
+***********************************************************/
+void readInputToArray(Story *storyArr, const int STORY_ARR_SIZE, ifstream& storyFile) {
+  string nothing;   // consumes newline at end of first line (number of stories)
+  getline(storyFile, nothing);
   // read input data into array
-  for (int storyNum = 0; storyNum < i; storyNum++) {
-    string url; 
-    string title;
-    int score;
-    getline(myfile, title);
-    getline(myfile, url);
-    myfile >> score;
-    getline(myfile, nothing);
-    Story newStory = {score, title, url};
+  for (int storyNum = 0; storyNum < STORY_ARR_SIZE; storyNum++) {
+    int score;    // SCORE of story
+    string title; // TITLE thereof
+    string url;   // stores URL thereof
+    getline(storyFile, title);
+    getline(storyFile, url);
+    storyFile >> score;
+    getline(storyFile, nothing);
+    Story newStory = {score, title, url}; // struct to hold a new Story
     *(storyArr + storyNum) = newStory;
   }
-  myfile.close();
-  return 0;
 }
 
+/*********************************************************** 
+// MAIN: base of execution
+// :return: where there was an error (1) in  or no! (0)
+***********************************************************/
 int main() {
-  string fileToBeOpened;
+  string fileToBeOpened;  // file where story data lies
   cout << "Type the name of the file you would like to open: ";
   cin >> fileToBeOpened;
   cout << "\n";
-  int storyArrSize = 0;
-  Story *storyArr = new Story[storyArrSize];
-  int error = readInputToArray(storyArr, &storyArrSize, fileToBeOpened);
-  if (error)
+  ifstream storyFile;  // file stream object
+  storyFile.open(fileToBeOpened, std::ios_base::in);
+  if (!storyFile) {
+    cout << "File does not exist\n";
     return 1;
+  }
+  int storyArrSize = 0;
+  storyFile >> storyArrSize;
+  Story *storyArr = new Story[storyArrSize];
+  readInputToArray(storyArr, storyArrSize, storyFile);
+  storyFile.close();
 
-  int trueMode = findMode(storyArr, storyArrSize);
-
+  unordered_map<int, vector<Story> > map; // MAP scores to stories with that score
+  int trueMode = findMode(storyArr, storyArrSize, &map); // mode of story score data
+  
   // if no mode found
   if (trueMode == -1)
     cout << "Mode: No mode was found.\n\n";
   else {
     // finally, print out mode, and each story's title and url in the final mode vector
     cout << "Mode: " << trueMode << "\n\n";
-    vector<Story> storiesToBePrinted = map[trueMode];
+    vector<Story> storiesToBePrinted = map[trueMode]; // stories with SCORE==TRUEMODE
     for (auto& thisStory : storiesToBePrinted)
       cout << thisStory.title << "\n" << thisStory.url << "\n\n";
   }
 
-  delete[] storyArr;
+  delete[] storyArr;  // free memory!!!!
   return 0;
 }
 
-int findMode(const Story* STORY_ARR, const int STORY_ARR_SIZE) {
-  // find mode, map int to vector of story
-  // for each score, have a vector of stories with that score
+/*********************************************************** 
+// FINDMODE: find mode, map score to vector of story for each score, have a vector of stories with that score
+// :param STORYARR: ptr to array of `Story` structs
+// :param STORYARRSIZE: Integer that indicates number of elems in array
+// :param MAPPTR: ptr to map from popularity scores to stories with that score 
+// :return: TRUEMODE: statistical mode of score data 
+***********************************************************/
+int findMode(const Story* STORY_ARR, const int STORY_ARR_SIZE, unordered_map<int, vector<Story> > *mapPtr) {
+  unordered_map<int, vector<Story> > map = *mapPtr; // maps scores to stories
   for (int i = 0; i < STORY_ARR_SIZE; i++) {
     Story story = *(STORY_ARR + i);
     if (map.count(story.score) == 0) {
@@ -97,8 +109,7 @@ int findMode(const Story* STORY_ARR, const int STORY_ARR_SIZE) {
       map[story.score].push_back(story);
   }
 
-  // check to see if all modes are the same or not
-  int currFreq = -1;
+  int currFreq = -1;  // check to see if all modes are the same or not
   bool foundDiff = false;
   for (auto& storyFreq : map) {
     if (currFreq == -1)
