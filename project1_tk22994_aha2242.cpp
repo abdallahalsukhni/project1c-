@@ -24,45 +24,62 @@ struct Story {
 };
 
 int findMode(const Story* STORY_ARR, const int STORY_ARR_SIZE);
+int readInputToArray(Story *storyArr, int *storyArrSizePtr, string fileToBeOpened);
 
 unordered_map<int, vector<Story> > map;
 
-int main() {
-  string fileToBeOpened;
-  cout << "Type the name of the file you would like to open: ";
-  cin >> fileToBeOpened;
-  ifstream myfile; 
+int readInputToArray(Story *storyArr, int *storyArrSizePtr, string fileToBeOpened) {
+  ifstream myfile;
   myfile.open(fileToBeOpened);
-  if (!myfile)
-    cout << "File does not exist";
-	
-  int storyArrSize;
-  myfile >> storyArrSize;
+  if (!myfile) {
+    cout << "File does not exist\n";
+    return 1;
+  }
+  myfile >> *storyArrSizePtr;
   string nothing;
   getline(myfile, nothing);
-  Story *storyArr = nullptr;
-  storyArr = new Story[storyArrSize];
-
+  int i = *storyArrSizePtr;
   // read input data into array
-  for (int storyNum = 0; storyNum < storyArrSize; storyNum++) {
-    string url;
+  for (int storyNum = 0; storyNum < i; storyNum++) {
+    string url; 
     string title;
     int score;
-    std::getline(myfile, title);
-    std::getline(myfile, url);
+    getline(myfile, title);
+    getline(myfile, url);
     myfile >> score;
     getline(myfile, nothing);
     Story newStory = {score, title, url};
     *(storyArr + storyNum) = newStory;
   }
+  myfile.close();
+  return 0;
+}
+
+int main() {
+  string fileToBeOpened;
+  cout << "Type the name of the file you would like to open: ";
+  cin >> fileToBeOpened;
+  cout << "\n";
+  int storyArrSize = 0;
+  Story *storyArr = new Story[storyArrSize];
+  int error = readInputToArray(storyArr, &storyArrSize, fileToBeOpened);
+  if (error)
+    return 1;
 
   int trueMode = findMode(storyArr, storyArrSize);
-  // finally, print out mode, and each story's title and url in the final mode vector
-  cout << "Mode: " << trueMode << "\n\n";
-  vector<Story> storiesToBePrinted = map[trueMode];
-  for (auto& thisStory : storiesToBePrinted)
-    cout << thisStory.title << "\n" << thisStory.url << "\n\n";
 
+  // if no mode found
+  if (trueMode == -1)
+    cout << "Mode: No mode was found.\n\n";
+  else {
+    // finally, print out mode, and each story's title and url in the final mode vector
+    cout << "Mode: " << trueMode << "\n\n";
+    vector<Story> storiesToBePrinted = map[trueMode];
+    for (auto& thisStory : storiesToBePrinted)
+      cout << thisStory.title << "\n" << thisStory.url << "\n\n";
+  }
+
+  delete[] storyArr;
   return 0;
 }
 
@@ -84,9 +101,9 @@ int findMode(const Story* STORY_ARR, const int STORY_ARR_SIZE) {
   int currFreq = -1;
   bool foundDiff = false;
   for (auto& storyFreq : map) {
-    if(currFreq == -1) {
+    if (currFreq == -1)
       currFreq = storyFreq.second.size();
-    } else if(currFreq != storyFreq.second.size()) {
+    else if (currFreq != storyFreq.second.size()) {
       foundDiff = true;
       break;
     }
@@ -108,9 +125,8 @@ int findMode(const Story* STORY_ARR, const int STORY_ARR_SIZE) {
 
   // if there are multiple modes then add each of them to a list, and find which one occurs first in input file
   for (auto& storyFreq : map) {
-    if (storyFreq.second.size() == mostFreqSoFar) {
+    if (storyFreq.second.size() == mostFreqSoFar)
       modeVector.push_back(storyFreq.first);
-    }
   }
 
   int trueMode = -1;
@@ -132,4 +148,3 @@ int findMode(const Story* STORY_ARR, const int STORY_ARR_SIZE) {
 
   return trueMode;
 }
-
