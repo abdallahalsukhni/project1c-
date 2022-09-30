@@ -65,9 +65,9 @@ int main() {
     cout << "File does not exist\n";
     return 1;
   }
-  int storyArrSize = 0;
+  int storyArrSize = 0; // CONST to hold size of Story array
   storyFile >> storyArrSize;
-  Story *storyArr = new Story[storyArrSize];
+  Story *storyArr = new Story[storyArrSize];  // dynamically allocate mem
   readInputToArray(storyArr, storyArrSize, storyFile);
   storyFile.close();
 
@@ -99,7 +99,7 @@ int main() {
 int findMode(const Story* STORY_ARR, const int STORY_ARR_SIZE, unordered_map<int, vector<Story> > *mapPtr) {
   unordered_map<int, vector<Story> > map = *mapPtr; // maps scores to stories
   for (int i = 0; i < STORY_ARR_SIZE; i++) {
-    Story story = *(STORY_ARR + i);
+    Story story = *(STORY_ARR + i);   // story at Ith pos in STORY_ARR
     if (map.count(story.score) == 0) {
       vector<Story> thisScoreVector;
       thisScoreVector.push_back(story);
@@ -110,7 +110,7 @@ int findMode(const Story* STORY_ARR, const int STORY_ARR_SIZE, unordered_map<int
   }
 
   int currFreq = -1;  // check to see if all modes are the same or not
-  bool foundDiff = false;
+  bool foundDiff = false; // does the data have a mode?
   for (auto& storyFreq : map) {
     if (currFreq == -1)
       currFreq = storyFreq.second.size();
@@ -122,10 +122,8 @@ int findMode(const Story* STORY_ARR, const int STORY_ARR_SIZE, unordered_map<int
   if (!foundDiff)
     return -1;
 	
-  vector<int> modeVector;
-  int mode = 0;
-  int mostFreqSoFar = 0;
-
+  int mode = 0;           // our mode!
+  int mostFreqSoFar = 0;  // most freqent mode value so far
   // calculate what the mode is
   for (auto& storyFreq : map) {
     if (storyFreq.second.size() > mostFreqSoFar) {
@@ -133,15 +131,15 @@ int findMode(const Story* STORY_ARR, const int STORY_ARR_SIZE, unordered_map<int
       mostFreqSoFar = storyFreq.second.size();
     }
   }
-
+  
   // if there are multiple modes then add each of them to a list, and find which one occurs first in input file
+  vector<int> modeVector; // vector in question
   for (auto& storyFreq : map) {
     if (storyFreq.second.size() == mostFreqSoFar)
       modeVector.push_back(storyFreq.first);
   }
 
-  int trueMode = -1;
-  // find which mode occurs first in input file
+  int trueMode = -1;  // find which mode occurs first in input file
   for (int spot = 0; spot < STORY_ARR_SIZE; spot++) {
     bool found = false;
     Story story = *(STORY_ARR + spot);
